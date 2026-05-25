@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+    --background: 110 20% 96%;
+    --foreground: 140 30% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 140 30% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 140 30% 12%;
+
+    --primary: 142 76% 22%;
+    --primary-foreground: 120 20% 99%;
+
+    --secondary: 120 15% 92%;
+    --secondary-foreground: 140 30% 15%;
+
+    --muted: 120 10% 94%;
+    --muted-foreground: 140 10% 45%;
+
+    --accent: 120 15% 92%;
+    --accent-foreground: 142 76% 22%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 120 10% 88%;
+    --input: 120 10% 88%;
+    --ring: 142 76% 22%;
+
+    --radius: 1.2rem;
+  }
+
+  .dark {
+    color-scheme: dark;
+    --background: 140 15% 8%;
+    --foreground: 120 20% 96%;
+
+    --card: 140 12% 11%;
+    --card-foreground: 120 20% 96%;
+
+    --popover: 140 12% 11%;
+    --popover-foreground: 120 20% 96%;
+
+    --primary: 142 70% 45%;
+    --primary-foreground: 140 30% 10%;
+
+    --secondary: 140 12% 16%;
+    --secondary-foreground: 120 20% 96%;
+
+    --muted: 140 10% 15%;
+    --muted-foreground: 140 8% 65%;
+
+    --accent: 140 12% 16%;
+    --accent-foreground: 142 70% 45%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 120 20% 96%;
+
+    --border: 140 10% 16%;
+    --input: 140 10% 16%;
+    --ring: 142 70% 45%;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+  select, input, textarea {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+  option {
+    background-color: hsl(var(--card));
+    color: hsl(var(--foreground));
+  }
+}
