@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Lightbulb, TrendingUp, TrendingDown, AlertTriangle, Sparkles, X, Brain } from 'lucide-react';
 import type { Database } from '../../lib/types';
 import { formatCurrency } from '../../lib/utils';
+import { useSubscriptions } from '../../lib/hooks/useSubscriptions';
 
 type Transaction = Database['public']['Tables']['transactions']['Row'];
 type Category = Database['public']['Tables']['categories']['Row'];
@@ -13,6 +14,49 @@ type InsightsCardProps = {
 
 export default function InsightsCard({ transactions, categories }: InsightsCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { subscriptions } = useSubscriptions();
+
+  const upcomingBills = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return subscriptions.filter(sub => {
+      const dueDay = sub.due_day;
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth();
+
+      // Project due date in this active calendar month
+      let dueDate = new Date(currentYear, currentMonth, dueDay);
+      
+      // Clamp due day if it exceeds the maximum days in this month
+      const maxDaysThisMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      if (dueDay > maxDaysThisMonth) {
+        dueDate = new Date(currentYear, currentMonth, maxDaysThisMonth);
+      }
+
+      // If the due date has already passed in the current month, project it to next month
+      if (dueDate < today) {
+        let nextMonth = currentMonth + 1;
+        let nextYear = currentYear;
+        if (nextMonth > 11) {
+          nextMonth = 0;
+          nextYear += 1;
+        }
+        
+        dueDate = new Date(nextYear, nextMonth, dueDay);
+        const maxDaysNextMonth = new Date(nextYear, nextMonth + 1, 0).getDate();
+        if (dueDay > maxDaysNextMonth) {
+          dueDate = new Date(nextYear, nextMonth, maxDaysNextMonth);
+        }
+      }
+
+      dueDate.setHours(0, 0, 0, 0);
+      const diffTime = dueDate.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      return diffDays >= 0 && diffDays <= 7;
+    });
+  }, [subscriptions]);
 
   const { insights, primaryInsight } = useMemo(() => {
     const generated: { title: string; desc: string; type: 'positive' | 'negative' | 'neutral' | 'alert'; action: string }[] = [];
@@ -23,7 +67,18 @@ export default function InsightsCard({ transactions, categories }: InsightsCardP
     const totalExpense = expenses.reduce((sum, t) => sum + t.amount, 0);
     const totalIncome = income.reduce((sum, t) => sum + t.amount, 0);
 
-    // 1. Savings Rate Insight
+    // 1. Subscription Alerts (Highly Actionable!)
+    if (upcomingBills.length > 0) {
+      const totalUpcoming = upcomingBills.reduce((sum, s) => sum + s.amount, 0);
+      generated.push({
+        title: 'Upcoming Automated Deductions',
+        desc: `You have ${upcomingBills.length} subscription(s) due in the next 7 days totaling ${formatCurrency(totalUpcoming)}.`,
+        type: 'alert',
+        action: 'Ensure your debit accounts have adequate liquid balances to cover these automated deductions.'
+      });
+    }
+
+    // 2. Savings Rate Insight
     if (totalIncome > 0) {
       const savingsRate = ((totalIncome - totalExpense) / totalIncome) * 100;
       if (savingsRate > 20) {
@@ -43,7 +98,7 @@ export default function InsightsCard({ transactions, categories }: InsightsCardP
       }
     }
 
-    // 2. Top Category Insight
+    // 3. Top Category Insight
     if (expenses.length > 0) {
       const categoryTotals: Record<string, number> = {};
       expenses.forEach(t => {
@@ -66,7 +121,7 @@ export default function InsightsCard({ transactions, categories }: InsightsCardP
       }
     }
 
-    // 3. Large Transaction Alert
+    // 4. Large Transaction Alert
     const largeTransactions = expenses.filter(t => t.amount > 5000);
     if (largeTransactions.length > 0) {
       generated.push({
@@ -92,7 +147,7 @@ export default function InsightsCard({ transactions, categories }: InsightsCardP
     const primary = alertInsight || neutralInsight || generated[0];
 
     return { insights: generated, primaryInsight: primary };
-  }, [transactions, categories]);
+  }, [transactions, categories, upcomingBills]);
 
   const getIcon = (type: string) => {
     switch (type) {

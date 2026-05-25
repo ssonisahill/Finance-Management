@@ -11,6 +11,7 @@ import SpendingDonut from '../components/dashboard/SpendingDonut';
 import IncomeExpenseBar from '../components/dashboard/IncomeExpenseBar';
 import RecentTransactions from '../components/dashboard/RecentTransactions';
 import InsightsCard from '../components/dashboard/InsightsCard';
+import BudgetProgressWidget from '../components/dashboard/BudgetProgressWidget';
 
 export default function DashboardPage() {
   const { preferences } = usePreferences();
@@ -61,6 +62,10 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <SpendingDonut transactions={periodTransactions} categories={categories} />
+        <BudgetProgressWidget transactions={periodTransactions} categories={categories} />
+      </div>
+
+      <div className="mb-6">
         <IncomeExpenseBar transactions={periodTransactions} currentPeriod={currentPeriod} />
       </div>
 

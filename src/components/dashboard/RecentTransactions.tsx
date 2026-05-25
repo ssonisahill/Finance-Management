@@ -76,12 +76,25 @@ export default function RecentTransactions({ transactions, categories, accounts 
                   {getTypeIcon(tx.type)}
                 </div>
                 <div className="min-w-0">
-                  <p className="font-semibold text-foreground text-xs truncate leading-tight">{tx.description}</p>
+                  <div className="flex flex-col">
+                    <p className="font-semibold text-foreground text-xs truncate leading-tight">{tx.description}</p>
+                    {tx.notes && tx.notes !== 'incoming' && tx.notes !== 'outgoing' && (
+                      <span className="text-[10px] text-muted-foreground/75 mt-0.5">{tx.notes}</span>
+                    )}
+                  </div>
                   <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground mt-0.5">
                     <span>{format(new Date(tx.date), 'MMM d, yyyy')}</span>
                     <span>•</span>
                     <span className="truncate">{account?.name || 'Account'}</span>
-                    {!isTransfer && category && (
+                    {isTransfer ? (
+                      <>
+                        <span>•</span>
+                        <span className="flex items-center gap-1 shrink-0 text-blue-500 font-bold">
+                          <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                          Transfer
+                        </span>
+                      </>
+                    ) : category ? (
                       <>
                         <span>•</span>
                         <span className="flex items-center gap-1 shrink-0">
@@ -89,7 +102,7 @@ export default function RecentTransactions({ transactions, categories, accounts 
                           {category.name}
                         </span>
                       </>
-                    )}
+                    ) : null}
                   </div>
                 </div>
               </div>

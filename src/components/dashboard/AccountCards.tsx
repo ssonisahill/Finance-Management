@@ -24,14 +24,15 @@ export default function AccountCards({ accounts, transactions }: AccountCardsPro
     return accounts.map((acc) => {
       let balance = acc.initial_balance;
       
-      const accTxs = transactions.filter(t => t.account_id === acc.id || t.linked_transfer_id);
+      const accTxs = transactions.filter(t => t.account_id === acc.id);
 
       accTxs.forEach((t) => {
-        if (t.type === 'income' && t.account_id === acc.id) balance += t.amount;
-        if (t.type === 'expense' && t.account_id === acc.id) balance -= t.amount;
-        // Handle transfers if they are not correctly mapped to income/expense
-        // In our schema, transfers are created as an expense on source and income on dest
-        // So we just rely on type === 'income' | 'expense' even if they are linked
+        if (t.type === 'income') balance += t.amount;
+        if (t.type === 'expense') balance -= t.amount;
+        if (t.type === 'transfer') {
+          if (t.notes === 'outgoing') balance -= t.amount;
+          else if (t.notes === 'incoming') balance += t.amount;
+        }
       });
 
       // Simple mock sparkline data - in reality we would compute daily balances for last 30 days

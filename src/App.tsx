@@ -5,6 +5,8 @@ import DashboardPage from './pages/DashboardPage';
 import TransactionsPage from './pages/TransactionsPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import SettingsPage from './pages/SettingsPage';
+import SubscriptionsPage from './pages/SubscriptionsPage';
+import BalanceSheetPage from './pages/BalanceSheetPage';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { session, loading } = useAuth();
@@ -85,6 +87,22 @@ function App() {
               element={
                 <ProtectedRoute>
                   <SettingsPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/subscriptions" 
+              element={
+                <ProtectedRoute>
+                  <SubscriptionsPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/balance-sheet" 
+              element={
+                <ProtectedRoute>
+                  <BalanceSheetPage />
                 </ProtectedRoute>
               } 
             />

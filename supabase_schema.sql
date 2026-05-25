@@ -79,23 +79,28 @@ BEGIN
   SELECT name INTO v_source_name FROM public.accounts WHERE id = p_source_account_id;
   SELECT name INTO v_dest_name FROM public.accounts WHERE id = p_dest_account_id;
 
-  -- Insert Outgoing Transaction (Expense side of transfer)
+  -- 1. Insert Outgoing Transaction with NULL link first to satisfy FK constraint
   INSERT INTO public.transactions (
-    id, user_id, account_id, type, description, amount, category_id, date, linked_transfer_id
+    id, user_id, account_id, type, description, amount, category_id, date, linked_transfer_id, notes
   ) VALUES (
     v_tx_out_id, p_user_id, p_source_account_id, 'transfer', 
     COALESCE(NULLIF(p_description, ''), 'Transfer') || ' to ' || v_dest_name, 
-    p_amount, NULL, p_date, v_tx_in_id
+    p_amount, NULL, p_date, NULL, 'outgoing'
   );
 
-  -- Insert Incoming Transaction (Income side of transfer)
+  -- 2. Insert Incoming Transaction linking back to Outgoing
   INSERT INTO public.transactions (
-    id, user_id, account_id, type, description, amount, category_id, date, linked_transfer_id
+    id, user_id, account_id, type, description, amount, category_id, date, linked_transfer_id, notes
   ) VALUES (
     v_tx_in_id, p_user_id, p_dest_account_id, 'transfer', 
     COALESCE(NULLIF(p_description, ''), 'Transfer') || ' from ' || v_source_name, 
-    p_amount, NULL, p_date, v_tx_out_id
+    p_amount, NULL, p_date, v_tx_out_id, 'incoming'
   );
+
+  -- 3. Update Outgoing Transaction to complete the bidirectional link
+  UPDATE public.transactions 
+  SET linked_transfer_id = v_tx_in_id 
+  WHERE id = v_tx_out_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 

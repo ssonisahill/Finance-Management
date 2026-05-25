@@ -5,22 +5,19 @@ import {
   ReceiptText, 
   PieChart, 
   Settings, 
-  Sparkles, 
-  Target, 
-  CreditCard, 
   MessageSquare, 
   Send, 
   X,
-  Sparkle
+  Sparkle,
+  Sparkles,
+  Landmark,
+  CreditCard
 } from 'lucide-react';
-import { useTheme } from '../shared/ThemeProvider';
 import { useAccounts } from '../../lib/hooks/useAccounts';
 import { useCategories } from '../../lib/hooks/useCategories';
 import { useTransactions } from '../../lib/hooks/useTransactions';
 
 export default function Sidebar() {
-  const { theme, setTheme } = useTheme();
-  
   // Fetch real data to fuel the AI Assistant with real calculations
   const { accounts } = useAccounts();
   const { categories } = useCategories();
@@ -49,15 +46,8 @@ export default function Sidebar() {
     { name: 'Overview', path: '/', icon: LayoutDashboard },
     { name: 'Transactions', path: '/transactions', icon: ReceiptText },
     { name: 'Analytics', path: '/analytics', icon: PieChart },
-  ];
-
-  const intelligenceItems = [
-    { name: 'Smart Insights', path: '/#insights', icon: Sparkles },
-  ];
-
-  const moneyControlItems = [
-    { name: 'Goals', path: '/#goals', icon: Target },
-    { name: 'Cards', path: '/#cards', icon: CreditCard },
+    { name: 'Balance Sheet', path: '/balance-sheet', icon: Landmark },
+    { name: 'Subscriptions', path: '/subscriptions', icon: CreditCard },
   ];
 
   const otherItems = [
@@ -144,7 +134,7 @@ export default function Sidebar() {
             <div className="bg-primary text-primary-foreground p-2 rounded-xl">
               <Sparkle className="h-5 w-5" />
             </div>
-            <span className="font-bold text-xl text-foreground tracking-tight">FINAI</span>
+            <span className="font-bold text-xl text-foreground tracking-tight animate-pulse">FINAI</span>
           </div>
           <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" title="AI Core Active"></div>
         </div>
@@ -177,75 +167,10 @@ export default function Sidebar() {
             </nav>
           </div>
 
-          {/* INTELLIGENCE */}
-          <div>
-            <p className="px-3 text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Intelligence</p>
-            <nav className="space-y-1">
-              {intelligenceItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <a
-                    key={item.name}
-                    href={item.path}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
-                  >
-                    <Icon className="h-4 w-4 text-emerald-500" />
-                    {item.name}
-                  </a>
-                );
-              })}
-            </nav>
-          </div>
-
-          {/* MONEY CONTROL */}
-          <div>
-            <p className="px-3 text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Money Control</p>
-            <nav className="space-y-1">
-              {moneyControlItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <a
-                    key={item.name}
-                    href={item.path}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
-                  >
-                    <Icon className="h-4 w-4" />
-                    {item.name}
-                  </a>
-                );
-              })}
-            </nav>
-          </div>
-
-          {/* OTHERS */}
-          <div>
-            <p className="px-3 text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Others</p>
-            <nav className="space-y-1">
-              {otherItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <NavLink
-                    key={item.name}
-                    to={item.path}
-                    className={({ isActive }) =>
-                      `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 text-sm ${
-                        isActive
-                          ? 'bg-primary text-primary-foreground font-semibold shadow-sm'
-                          : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                      }`
-                    }
-                  >
-                    <Icon className="h-4 w-4" />
-                    {item.name}
-                  </NavLink>
-                );
-              })}
-            </nav>
-          </div>
         </div>
 
         {/* AI Assistant Widget at the bottom */}
-        <div className="p-4 border-t border-border bg-muted/20">
+        <div className="p-4 border-t border-border bg-muted/20 space-y-3">
           <div className="bg-card border border-border/80 rounded-2xl p-3.5 shadow-sm space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -292,22 +217,37 @@ export default function Sidebar() {
               </button>
             </div>
           </div>
+
+          {/* Settings NavLink placed below AI Assistant */}
+          <nav className="space-y-1">
+            {otherItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <NavLink
+                  key={item.name}
+                  to={item.path}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 text-sm ${
+                      isActive
+                        ? 'bg-primary text-primary-foreground font-semibold shadow-sm'
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                    }`
+                  }
+                >
+                  <Icon className="h-4 w-4" />
+                  {item.name}
+                </NavLink>
+              );
+            })}
+          </nav>
         </div>
 
-        {/* Theme and Account Footer */}
-        <div className="px-6 py-4 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
+        {/* Minimalist Footer */}
+        <div className="px-6 py-4 border-t border-border flex items-center justify-between text-[10px] text-muted-foreground">
           <div className="flex items-center gap-1">
             <span className="font-semibold text-foreground">Vault:</span> Offline
           </div>
-          <select
-            value={theme}
-            onChange={(e) => setTheme(e.target.value as 'light' | 'dark' | 'system')}
-            className="text-[10px] bg-muted border-none rounded p-1 text-foreground focus:ring-1 focus:ring-primary"
-          >
-            <option value="system">System</option>
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-          </select>
+          <div>Secure Vault v2.0</div>
         </div>
       </aside>
 
