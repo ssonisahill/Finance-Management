@@ -311,7 +311,7 @@ export default function TransactionsPage() {
                           </div>
                           <div className="flex flex-col">
                             <span className="font-semibold text-foreground">{tx.description}</span>
-                            {tx.notes && tx.notes !== 'incoming' && tx.notes !== 'outgoing' && (
+                            {tx.notes && tx.notes !== 'incoming' && tx.notes !== 'outgoing' && !tx.notes.startsWith('[Sub:') && (
                               <span className="text-[10px] text-muted-foreground/80 mt-0.5">{tx.notes}</span>
                             )}
                           </div>

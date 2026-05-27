@@ -78,7 +78,7 @@ export default function RecentTransactions({ transactions, categories, accounts 
                 <div className="min-w-0">
                   <div className="flex flex-col">
                     <p className="font-semibold text-foreground text-xs truncate leading-tight">{tx.description}</p>
-                    {tx.notes && tx.notes !== 'incoming' && tx.notes !== 'outgoing' && (
+                    {tx.notes && tx.notes !== 'incoming' && tx.notes !== 'outgoing' && !tx.notes.startsWith('[Sub:') && (
                       <span className="text-[10px] text-muted-foreground/75 mt-0.5">{tx.notes}</span>
                     )}
                   </div>
